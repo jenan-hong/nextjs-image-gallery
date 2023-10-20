@@ -12,15 +12,24 @@ import getBase64ImageUrl from '../utils/generateBlurPlaceholder'
 import type { ImageProps } from '../utils/types'
 import { useLastViewedPhoto } from '../utils/useLastViewedPhoto'
 import UploadModal from '../components/UploadModal'
+import React from 'react'
 
+const CustomLink = React.forwardRef<HTMLAnchorElement, { children: React.ReactNode; href: string; shallow?: boolean; as: string; className: string }>(
+  ({ children, href, shallow, as, className }, ref) => (
+    <Link href={href} shallow={shallow} as={as} className={className} ref={ref} >
+      <a ref={ref}>{children}</a>
+    </Link>
+  )
+);
 const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
   const router = useRouter()
   const { photoId } = router.query
   const [lastViewedPhoto, setLastViewedPhoto] = useLastViewedPhoto()
 
-  const lastViewedPhotoRef = useRef<HTMLAnchorElement>(null)
+  const lastViewedPhotoRef = useRef<HTMLAnchorElement>()
 
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  debugger
   useEffect(() => {
     // This effect keeps track of the last viewed photo in the modal to keep the index page in sync when the user navigates back
     if (lastViewedPhoto && !photoId) {
@@ -88,7 +97,7 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
             )}
           </div>
           {images.map(({ id, public_id, format, blurDataUrl }) => (
-            <Link
+            <CustomLink
               key={id}
               href={`/?photoId=${id}`}
               as={`/p/${id}`}
@@ -110,7 +119,7 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
                   (max-width: 1536px) 33vw,
                   25vw"
               />
-            </Link>
+            </CustomLink>
           ))}
         </div>
       </main>
