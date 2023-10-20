@@ -38,7 +38,7 @@ export default function Carousel({
           src={currentPhoto.blurDataUrl}
           className="pointer-events-none h-full w-full"
           alt="blurred background"
-          fill
+          layout="fill"
           priority={true}
         />
       </button>

@@ -3,7 +3,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Bridge from '../components/Icons/Bridge'
 import Logo from '../components/Icons/Logo'
 import Modal from '../components/Modal'
@@ -11,6 +11,7 @@ import cloudinary from '../utils/cloudinary'
 import getBase64ImageUrl from '../utils/generateBlurPlaceholder'
 import type { ImageProps } from '../utils/types'
 import { useLastViewedPhoto } from '../utils/useLastViewedPhoto'
+import UploadModal from '../components/UploadModal'
 
 const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
   const router = useRouter()
@@ -19,6 +20,7 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
 
   const lastViewedPhotoRef = useRef<HTMLAnchorElement>(null)
 
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   useEffect(() => {
     // This effect keeps track of the last viewed photo in the modal to keep the index page in sync when the user navigates back
     if (lastViewedPhoto && !photoId) {
@@ -73,6 +75,17 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
             >
               Clone and Deploy
             </a>
+            <button
+              className="pointer z-10 mt-2 rounded-lg border border-white bg-white px-3 py-2 text-sm font-semibold text-black transition hover:bg-white/10 hover:text-white md:mt-2"
+              onClick={() => setIsUploadModalOpen(true)}
+            >
+              Upload
+            </button>
+            {isUploadModalOpen && (
+              <UploadModal
+                onClose={() => setIsUploadModalOpen(false)}
+                open={isUploadModalOpen}/>
+            )}
           </div>
           {images.map(({ id, public_id, format, blurDataUrl }) => (
             <Link
@@ -139,7 +152,7 @@ export default Home
 
 export async function getStaticProps() {
   const results = await cloudinary.v2.search
-    .expression(`folder:${process.env.CLOUDINARY_FOLDER}/*`)
+  .expression(`folder:${process.env.CLOUDINARY_FOLDER}/*`)
     .sort_by('public_id', 'desc')
     .max_results(400)
     .execute()
