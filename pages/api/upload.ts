@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import cloudinary from 'cloudinary';
+import { Stream } from 'stream';
 const upload = require('../../utils/multer'); // Adjust the path to your multer configuration
 
 cloudinary.v2.config({
@@ -10,11 +11,12 @@ cloudinary.v2.config({
 });
 
 export default async function handler(
-  req: NextApiRequest,
+  req: Request,
   res: NextApiResponse
 ) {
   if (req.method === 'POST') {
     try {
+      // todo: error: Error uploading image: TypeError: req.formData is not a function
       const formData = await req.formData(); // Parse the FormData from the request
 
       // Access individual fields from the FormData
